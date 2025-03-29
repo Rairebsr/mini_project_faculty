@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advisor Assignment</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style1.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <header>
+        <img src="{{ url_for('static', filename='logo1.png') }}" alt="Logo" class="logo" height="65">
+        <div class="header-text">
+            <h1>Welcome <span id="hod-name">{{ hod_name }}</span></h1>
+            <h2 class="department-name">{{ department_name }}</h2>
+        </div>
+        <nav>
+            <div class="logout" onclick="logout()">
+                <i class="fas fa-power-off"></i>
+                <p>Logout</p>
+            </div>
+        </nav>
+    </header>
+    <aside id="sidebar">
+        <ul>
+            <li><a href="{{ url_for('hod_dashboard', hod_id=session['hod_id']) }}"><i class="fas fa-home"></i> Home</a></li>
+            <li><a href="{{ url_for('setth') }}"><i class="fas fa-chalkboard-teacher"></i> Set Threshold</a></li>
+            <li><a href="{{ url_for('mc_set') }}"><i class="fas fa-user-cog"></i> Map MC</a></li>
+            <li><a href="{{ url_for('advisor_set') }}"><i class="fas fa-user-cog"></i> Map Advisor</a></li>
+        </ul>
+    </aside>
+<main>
+    <div class="content-wrapper">
+    <h2>Assign Advisors</h2>
+    <label>Select Batch:</label>
+    <input type="text" id="batchInput" name="batch" placeholder="Enter batch" list="batchOptions">
+    <datalist id="batchOptions">
+        {% for batch in batch_list %}
+            <option value="{{ batch }}"></option>
+        {% endfor %}
+    </datalist>
+
+    <label>Select Advisor:</label>
+    <select id="advisorSelect">
+        {% for faculty in faculty_list %}
+            <option value="{{ faculty._id }}">{{ faculty.name }} ({{ faculty.pen_no }})</option>
+        {% endfor %}
+    </select>
+
+    <button id="addAdvisorBtn">Add Advisor</button>
+
+    <div id="advisorContainer">
+        {% for batch, advisors in advisor_mapping.items() %}
+        <div class="batch-group">
+            <div class="batch-header">
+                <span>Batch: {{ batch }}</span>
+            </div>
+            <div class="batch-content">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Advisor</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for advisor in advisors %}
+                            <tr>
+                                <td>{{ advisor.name }}</td>
+                                <td>
+                                    <button class="remove-advisor-btn" data-batch="{{ batch }}" data-id="{{ advisor.id }}">Remove</button>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+</main>
+    <script src="{{ url_for('static', filename='advisor_set.js') }}"></script>
+</body>
+</html>

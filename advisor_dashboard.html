@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advisor</title>
+    <script src="{{ url_for('static', filename='advisor.js') }}"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='advisor.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <header>
+        <img src="{{ url_for('static', filename='logo1.png') }}" alt="Logo" class="logo" height="65">
+        <h1>Welcome, <span id="advisor-name">{{ advisor.name if advisor else "[Advisor Name]" }}</span></h1>
+        <nav>
+            <div class="notification">
+                <i class="fas fa-bell"></i>
+                <div class="notification-dropdown">
+                    <p>No new notifications</p>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <aside id="sidebar">
+        <ul>
+            <li><a href="{{ url_for('course_mapping') }}" id="course-mapping.html"><i class="fas fa-book"></i> Courses Mapping</a></li>
+            <li><a href="{{ url_for('faculty_dashboard') }}"><i class="fas fa-chalkboard-teacher"></i> Faculty</a></li>
+            <li><a href="#"><i class="fas fa-chalkboard-teacher"></i>PO Attainment</a></li>
+            <li><a href="{{ url_for('co_attainment')}}"id="faculty9.html"><i class="fas fa-map"></i> Generate CO Mapping</a></li>
+        </ul>
+    </aside>
+
+    <main>
+        <section class="advisor-card">
+            <div class="advisor-info">
+                <h2>Advisor {{ advisor.name if advisor else "[Name]" }}</h2>
+            </div>
+        </section>
+
+        <section class="student-details">
+            <h1>Student Details</h1>
+            <table role="grid">
+                <thead>
+                    <tr>
+                        <th>University ID</th>
+                        <th>Name of the Student</th>
+                        <th>Admission No</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if students %}
+                        {% for student in students %}
+                            <tr>
+                                <td>{{ student.univ_no }}</td>
+                                <td>{{ student.name }}</td>
+                                <td>{{ student.reg_no }}</td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="3">No students found</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </section>
+    </main>
+</body>
+</html>

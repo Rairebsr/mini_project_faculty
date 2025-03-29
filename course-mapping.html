@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Courses Mapping</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='course-mapping.css') }}">
+    <script src="{{ url_for('static', filename='advisor.js') }}"></script>
+
+</head>
+<body>
+    <header>
+        <h1>Courses Mapping</h1>
+        <a href="{{ url_for('index') }}">Back to Dashboard</a>
+    </header>
+    <main>
+        <section class="course-mapping">
+            <h2>Course Mapping</h2>
+            <form id="course-form">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Semester</th>
+                            <th>Subject</th>
+                            <th>Department</th>
+                            <th>Teacher's Name</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <select id="semester" name="semester" required>
+                                        <option value="">Select Semester</option>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                        <option value="6">6</option>
+                                        <option value="7">7</option>
+                                        <option value="8">8</option>
+                                </select>
+                            </td>
+                            <td>
+                                <select id="subject" name="subject" required>
+                                    <option value="">Select Subject</option>
+                                </select>
+                            </td>
+                            <td>
+                                <select id="department" name="department" required onchange="fetchTeachers()">
+                                    <option value="">Select Department</option>
+                                    {% for department in departments %}
+                                        <option value="{{ department.dept_code }}">{{ department.dept_name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </td>
+                            <td>
+                                <select id="teacher" name="teacher" required>
+                                    <option value="">Select Teacher</option>
+                                </select>
+                            <td>
+                                <button type="submit" class="confirm-btn">Submit</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </form>
+        </section>
+
+        <!-- Display saved mappings -->
+        <section class="saved-mappings">
+            <h2>Saved Course Mappings</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Subject</th>
+                        <th>Teacher's Name</th>
+                        <th>Department</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="course-mapping-table">
+                    {% if mappings %}
+                        {% for mapping in mappings %}
+                        <tr data-id="{{ mapping._id }}" data-subject="{{ mapping.subject }}" data-teacher="{{ mapping.teacher }}" data-department="{{ mapping.department }}">
+                            <td>{{ mapping.subject }}</td>
+                            <td>{{ mapping.teacher }}</td>
+                            <td>{{ mapping.department }}</td>
+                            <td>
+                                <button class="btn btn-danger btn-sm delete-btn">Delete</button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    
+                    {% endif %}
+                </tbody>
+            </table>
+        </section>
+    </main>
+</body>
+</html>

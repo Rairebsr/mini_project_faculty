@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Batches Page</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='hod.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <header>
+        <img src="{{ url_for('static', filename='logo2.png') }}" alt="Logo" class="logo" height="65">
+        <div class="header-text">
+            <h1>Welcome, <span id="hod-name">{{ hod_name }}</span></h1>
+            <h2 class="department-name">DEPARTMENT OF COMPUTER SCIENCE</h2>
+        </div>
+        <nav>
+            <div class="logout" onclick="logout()">
+                <i class="fas fa-power-off"></i>
+                <p>Logout</p>
+            </div>
+        </nav>
+    </header>
+
+    <aside id="sidebar">
+        <ul>
+            <li><a href="{{ url_for('hod') }}"><i class="fas fa-home"></i> Home</a></li>
+            <li><a href="{{ url_for('batches') }}"><i class="fas fa-book"></i> Batches</a></li>
+            <li><a href="{{ url_for('setth') }}"><i class="fas fa-chalkboard-teacher"></i> Set Threshold</a></li>
+            <li><a href="{{ url_for('mapad') }}"><i class="fas fa-chalkboard-teacher"></i> Map Advisor</a></li>
+        </ul>
+    </aside>
+
+    <main>
+        <!-- CO Attainment Section -->
+        <section class="attainment-section">
+            <h2 class="section-heading">CO ATTAINMENT</h2>
+            <div class="dropdown-container">
+                <select id="batch">
+                    <option value="">Select Batch</option>
+                    {% for batch in batches %}
+                        <option value="{{ batch.batch_id }}">{{ batch.batch_id }}</option>
+                    {% endfor %}
+                </select>
+
+                <select id="semester">
+                    <option value="">Select Semester</option>
+                    {% for i in range(1, 9) %}
+                        <option value="S{{ i }}">S{{ i }}</option>
+                    {% endfor %}
+                </select>
+
+                <select id="course">
+                    <option value="">Select Course</option>
+                </select>
+            </div>
+            <button class="next-button" onclick="validateCO()">Next</button>
+        </section>
+
+        <!-- PO Attainment Section -->
+        <section class="attainment-section">
+            <h2 class="section-heading">PO ATTAINMENT</h2>
+            <div class="dropdown-container">
+                <select id="poBatch">
+                    <option value="">Select Batch</option>
+                    {% for batch in batches %}
+                        <option value="{{ batch.batch_id }}">{{ batch.batch_id }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button class="next-button" onclick="validatePO()">Next</button>
+        </section>
+    </main>
+
+    <script>
+        document.getElementById("semester").addEventListener("change", function () {
+            var selectedSemester = this.value;
+            var courseDropdown = document.getElementById("course");
+
+            courseDropdown.innerHTML = '<option value="">Select Course</option>';
+
+            if (selectedSemester !== "") {
+                fetch(`/get_courses/${selectedSemester}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        data.forEach(course => {
+                            var option = document.createElement("option");
+                            option.value = course.code;
+                            option.textContent = course.title;
+                            courseDropdown.appendChild(option);
+                        });
+                    })
+                    .catch(error => console.error("Error fetching courses:", error));
+            }
+        });
+
+        function validateCO() {
+            var batch = document.getElementById("batch").value;
+            var semester = document.getElementById("semester").value;
+            var course = document.getElementById("course").value;
+
+            if (batch === "" || semester === "" || course === "") {
+                alert("Please select valid data for Batch, Semester, and Course.");
+            } else {
+                window.location.href = "{{ url_for('batchesco') }}";
+            }
+        }
+
+        function validatePO() {
+            var poBatch = document.getElementById("poBatch").value;
+
+            if (poBatch === "") {
+                alert("Please select a valid Batch.");
+            } else {
+                alert("Proceeding to PO Attainment (Add appropriate navigation link here).");
+            }
+        }
+
+        function logout() {
+            fetch("{{ url_for('logout') }}", {
+                method: "GET"
+            }).then(() => {
+                window.location.href = "{{ url_for('index') }}"; // Redirect to login page
+            });
+        }
+    </script>
+</body>
+</html>
