@@ -1,7 +1,6 @@
 import csv
 import io
 import os
-from cv2 import threshold
 import pandas as pd
 import uuid
 import bcrypt
@@ -11,15 +10,16 @@ from werkzeug.utils import secure_filename
 from pymongo import MongoClient
 from flask_pymongo import PyMongo
 from datetime import datetime
+import config
 
 
 app = Flask(__name__)
-app.config["MONGO_URI"] = "mongodb://localhost:27017/mini"
+app.config["MONGO_URI"] = config.MONGO_URI
 mongo = PyMongo(app)
-app.secret_key = 'Rerai@13'  # Session Management
 
-# MongoDB Connection
-client = MongoClient('mongodb://localhost:27017/')
+app.secret_key = config.SECRET_KEY
+# Direct MongoClient connection
+client = MongoClient(config.MONGO_URI)
 db = client['mini']
 
 # Collections
