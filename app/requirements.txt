@@ -1,0 +1,5 @@
+flask
+flask-pymongo
+pymongo
+gunicorn
+python-dotenv
