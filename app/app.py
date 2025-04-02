@@ -57,11 +57,8 @@ def faculty_login():
     data = request.json
     pen_no = data.get('pen_no')
     password = str(data.get('password'))
-    
-    print(pen_no)
 
     faculty = faculty_collection.find_one({"pen_no": pen_no})
-    print(faculty)
     if not faculty:
         return jsonify({"success": False, "message": "Invalid Credentials!"}), 401
 
@@ -69,29 +66,26 @@ def faculty_login():
     print(f"Entered PEN: {pen_no}, Entered Password: {password}")
     print(f"Stored Password: {stored_password} (Type: {type(stored_password)})")
 
-    # Check if password is hashed (bcrypt hashes start with $2b$ or similar pattern)
+    # 🚨 Check if the password is **NOT HASHED**
     if not stored_password.startswith("$2b$"):  # Plain-text password detected
         if stored_password == password:  # Password matches stored plain text
             session['pen_no'] = pen_no  
             redirect_url = url_for('change_password_page')
-            print(f"Redirecting user to: {redirect_url}")  # Debugging
             return jsonify({
                 "success": False,
                 "message": "First-time login detected. Please change your password.",
                 "redirect_url": redirect_url
             }), 403
+        else:
+            return jsonify({"success": False, "message": "Invalid Credentials!"}), 401
 
+    # If password is hashed, check with bcrypt
     entered_password = password.encode("utf-8")
     if not bcrypt.checkpw(entered_password, stored_password.encode("utf-8")):
         return jsonify({"success": False, "message": "Invalid Credentials!"}), 401
 
     # Session Handling
     session_id = str(uuid.uuid4())
-    advisor_batches = faculty.get('role', {}).get('advisor', [])
-    is_mc = faculty.get('role', {}).get('mc', False)
-    is_hod = faculty.get('role', {}).get('hod', False)  # Check if faculty is HoD
-
-
     session.update({
         'session_id': session_id,
         'faculty_id': str(faculty['_id']),
@@ -99,10 +93,10 @@ def faculty_login():
         'name': faculty['name'],
         'dept_code': faculty['dept_code'],
         'role': "FACULTY",
-        'advisor_batches': advisor_batches,
-        'is_mc': is_mc,
-        'is_hod': is_hod,  # Add HoD role to session
-        'hod_id': str(faculty['_id']) if is_hod else None  # Store HoD ID only if faculty is HoD
+        'advisor_batches': faculty.get('role', {}).get('advisor', []),
+        'is_mc': faculty.get('role', {}).get('mc', False),
+        'is_hod': faculty.get('role', {}).get('hod', False),
+        'hod_id': str(faculty['_id']) if faculty.get('role', {}).get('hod', False) else None
     })
 
     session_collection.insert_one({
@@ -119,6 +113,7 @@ def faculty_login():
         "session_id": session_id,
         "redirect_url": url_for('faculty_dashboard')
     })
+
 
 @app.route('/change_password_page')
 def change_password_page():
