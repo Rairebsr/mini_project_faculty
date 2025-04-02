@@ -3,3 +3,4 @@ flask-pymongo
 pymongo
 gunicorn
 python-dotenv
+pandas
